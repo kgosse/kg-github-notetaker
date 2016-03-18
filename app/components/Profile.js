@@ -7,6 +7,7 @@ import React, { Component } from 'react';
 import UserProfile from './Github/UserProfile';
 import Repos from './Github/Repos';
 import Notes from './Notes/Notes';
+import helpers from '../utils/helpers';
 
 import ReactFireMixin from 'reactfire';
 import Firebase from 'firebase';
@@ -17,10 +18,8 @@ let Profile  = React.createClass({
     getInitialState(){
         return {
             notes: [1, 2, 3],
-            bio: {
-                name: 'Kévin Gossé'
-            },
-            repos: ['a', 'b', 'c']
+            bio: {},
+            repos: []
         };
     },
 
@@ -28,6 +27,14 @@ let Profile  = React.createClass({
         this.ref = new Firebase('https://kg-github-notetaker.firebaseio.com/');
         let childRef = this.ref.child(this.props.params.username);
         this.bindAsArray(childRef, 'notes');
+
+        helpers.getGithubInfo(this.props.params.username)
+            .then(function(data){
+                this.setState({
+                    bio: data.bio,
+                    repos: data.repos
+                })
+            }.bind(this))
     },
 
     componentWillUnmount(){

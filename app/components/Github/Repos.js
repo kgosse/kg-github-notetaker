@@ -6,10 +6,10 @@ import React, { Component } from 'react';
 
 class Repos extends Component {
     render(){
+        console.log('REPOS', this.props.repos);
         return (
             <div>
                 <p>REPOS</p>
-                REPOS: {this.props.repos}
             </div>
         )
     }
