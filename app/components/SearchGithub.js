@@ -10,7 +10,7 @@ class SearchGithub extends Component {
     _handleSubmit = () => {
         let username = this.usernameRef.value;
         this.usernameRef.value = '';
-        hashHistory.push("profile/" + username);
+        hashHistory.push("/profile/" + username);
     };
 
     render(){
