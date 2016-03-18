@@ -3,16 +3,14 @@
  */
 
 import React from 'react';
-import { Router, Route, IndexRoute } from 'react-router';
-
 import Main from '../components/Main';
 import Home from '../components/Home';
 import Profile from '../components/Profile';
+import { Route, IndexRoute } from 'react-router';
 
-module.exports = (
+export default (
     <Route path="/" component={Main}>
-        <IndexRoute component={Home} />
         <Route path="profile/:username" component={Profile} />
-        <Route path="*" component={Home} />
+        <IndexRoute component={Home} />
     </Route>
 );

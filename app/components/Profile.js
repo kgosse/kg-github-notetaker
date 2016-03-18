@@ -7,10 +7,9 @@ import React, { Component } from 'react';
 import UserProfile from './Github/UserProfile';
 import Repos from './Github/Repos';
 import Notes from './Notes/Notes';
-import helpers from '../utils/helpers';
-
 import ReactFireMixin from 'reactfire';
 import Firebase from 'firebase';
+import getGithubInfo from '../utils/helpers';
 
 
 let Profile  = React.createClass({
@@ -26,7 +25,7 @@ let Profile  = React.createClass({
         var childRef = this.ref.child(username);
         this.bindAsArray(childRef, 'notes');
 
-        helpers.getGithubInfo(username)
+        getGithubInfo(username)
             .then(function(data){
                 this.setState({
                     bio: data.bio,
