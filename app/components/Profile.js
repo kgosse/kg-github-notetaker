@@ -3,27 +3,39 @@
  */
 
 import React, { Component } from 'react';
-
 import UserProfile from './Github/UserProfile';
 import Repos from './Github/Repos';
 import Notes from './Notes/Notes';
-import ReactFireMixin from 'reactfire';
-import Firebase from 'firebase';
 import getGithubInfo from '../utils/helpers';
+import Rebase from 're-base';
 
+const base = Rebase.createClass('https://github-note-taker.firebaseio.com/')
 
-let Profile  = React.createClass({
-    mixins: [ReactFireMixin],
-    getInitialState(){
-        return {
-            notes: [1, 2, 3],
+class Profile extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            notes: [],
             bio: {},
             repos: []
-        };
-    },
-    init: function(username){
-        var childRef = this.ref.child(username);
-        this.bindAsArray(childRef, 'notes');
+        }
+    }
+    componentDidMount(){
+        this.init(this.props.params.username)
+    }
+    componentWillReceiveProps(nextProps){
+        base.removeBinding(this.ref);
+        this.init(nextProps.params.username);
+    }
+    componentWillUnmount(){
+        base.removeBinding(this.ref);
+    }
+    init(username){
+        this.ref = base.bindToState(username, {
+            context: this,
+            asArray: true,
+            state: 'notes'
+        });
 
         getGithubInfo(username)
             .then(function(data){
@@ -32,22 +44,12 @@ let Profile  = React.createClass({
                     repos: data.repos
                 })
             }.bind(this))
-    },
-    componentDidMount(){
-        this.ref = new Firebase('https://kg-github-notetaker.firebaseio.com/');
-        this.init(this.props.params.username);
-    },
-    componentWillReceiveProps: function(nextProps){
-        this.unbind('notes');
-        this.init(nextProps.params.username);
-    },
-    componentWillUnmount(){
-        this.unbind('notes');
-    },
-    handleAddNote (newNote){
-        this.ref.child(this.props.params.username).child(this.state.notes.length).set(newNote);
-    },
-
+    }
+    handleAddNote(newNote){
+        base.post(this.props.params.username, {
+            data: this.state.notes.concat([newNote])
+        })
+    }
     render(){
         return (
             <div className="row">
@@ -55,17 +57,17 @@ let Profile  = React.createClass({
                     <UserProfile username={this.props.params.username} bio={this.state.bio} />
                 </div>
                 <div className="col-md-4">
-                    <Repos username={this.props.params.username} repos={this.state.repos} />
+                    <Repos username={this.props.params.username} repos={this.state.repos}/>
                 </div>
                 <div className="col-md-4">
-                    <Notes username={this.props.params.username}
-                           notes={this.state.notes}
-                           addNote={this.handleAddNote}
-                    />
+                    <Notes
+                        username={this.props.params.username}
+                        notes={this.state.notes}
+                        addNote={(newNote) => this.handleAddNote(newNote)} />
                 </div>
             </div>
-        );
+        )
     }
-});
+}
 
 export default Profile;
