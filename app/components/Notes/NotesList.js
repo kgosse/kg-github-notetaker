@@ -4,18 +4,18 @@
 
 import React from 'react';
 
-class NotesList extends React.Component {
-    render(){
-        let notes = this.props.notes.map((note, index) => {
-            return <li className="list-group-item" key={index}> {note}</li>
-        });
+const NotesList = ({notes}) => {
+    return (
+        <ul className="list-group">
+            {notes.map((note, index) => (
+                <li className="list-group-item" key={index}>{note}</li>
+            ))}
+        </ul>
+    )
+};
 
-        return (
-            <ul className="list-group">
-                {notes}
-            </ul>
-        )
-    }
-}
+NotesList.propTypes = {
+    notes: React.PropTypes.array.isRequired
+};
 
 export default NotesList;
